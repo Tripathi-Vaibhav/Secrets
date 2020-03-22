@@ -33,7 +33,8 @@ const userSchema =new mongoose.Schema({
     email: String,
     password: String,
     googleId: String,
-    facebookId: String
+    facebookId: String,
+    secret: String
 });
 
 
@@ -128,6 +129,35 @@ app.get("/secrets", function(req, res){
 app.get("/logout", function(req, res){
     req.logout();
     res.redirect("/");
+});
+
+app.get("/submit", function(req, res){
+    if(req.isAuthenticated())
+    res.render("submit");
+
+    else
+    res.redirect("/login");
+});
+
+app.post("/submit", function(req, res){
+    
+    const submittedSecret = req.body.secret;
+    
+    User.findById(req.user.id, function(err, foundUser){
+
+        if(err)
+        console.log(err);
+        
+        else{
+            if(foundUser){
+                foundUser.secret = submittedSecret;
+                foundUser.save(function(){
+                    res.redirect("/secrets");
+                });
+            }
+        }
+    });
+    
 });
 
 
