@@ -119,11 +119,17 @@ app.get("/login", function(req, res){
 });
 
 app.get("/secrets", function(req, res){
-    if(req.isAuthenticated())
-    res.render("secrets");
+    
+    User.find({secret: {$ne: null}}, function(err, foundUsers){
 
-    else
-    res.redirect("/login");
+        if(err)
+        console.log(err);
+        
+        else{
+            if(foundUsers)
+            res.render("secrets", {usersSecrets: foundUsers});
+        }
+    });
 });
 
 app.get("/logout", function(req, res){
